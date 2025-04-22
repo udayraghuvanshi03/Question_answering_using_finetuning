@@ -443,7 +443,7 @@ class Transformer(tf.keras.Model):
 
         self.final_layer = tf.keras.layers.Dense(target_vocab_size, activation='softmax')
     
-    def call(self, input_sentence, output_sentence, training, enc_padding_mask, look_ahead_mask, dec_padding_mask):
+    def call(self, input_sentence, output_sentence, enc_padding_mask, look_ahead_mask, dec_padding_mask,training=True):
         """
         Forward pass for the entire Transformer
         Arguments:
@@ -521,10 +521,10 @@ def train_step(inp, tar, model, loss_object, optimizer, train_loss):
         predictions, _ = model(
             inp,
             tar_inp, 
-            True, 
             enc_padding_mask, 
             look_ahead_mask, 
-            enc_padding_mask
+            enc_padding_mask,
+            training=True
         )
         loss = masked_loss(tar_real, predictions, loss_object)
 
@@ -581,10 +581,10 @@ def next_word(encoder_input, output, model):
     predictions, attention_weights = model(
         encoder_input, 
         output,
-        False,
         enc_padding_mask,
         look_ahead_mask,
-        enc_padding_mask
+        enc_padding_mask,
+        training=False
     )
 
     predictions = predictions[: ,-1:, :]
